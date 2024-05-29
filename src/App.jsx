@@ -1,32 +1,41 @@
-import React, { useState } from "react";
-import { useEffect } from "react";
-import List from "./components/List";
+import React, { useState, useEffect } from "react";
 
-// TODO: 콘솔창을 확인해보고 Add Item 버튼 클릭 시
-//       useCallback 사용해서 useEffect 안의 콘솔로그가 찍히지 않도록 해보세요.
+// TODO: useFetch 라는 커스텀훅을 사용해서 리팩터링 해보세요
 
 const App = () => {
-  const [input, setInput] = useState("");
-  const [items, setItems] = useState(["Item 1", "Item 2", "Item 3"]);
-
-  const handleInputChange = (event) => {
-    setInput(event.target.value);
-  };
-
-  const addItem = () => {
-    setItems((prevItems) => [...prevItems, input]);
-  };
+  const [title, setTitle] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    console.log("Add Item 버튼 클릭 시에는 로그가 찍히지 않아야 합니다!");
-  }, [addItem]);
+    const fetchData = async () => {
+      try {
+        const response = await fetch(
+          "https://jsonplaceholder.typicode.com/todos/1",
+        );
+        console.log("response:", response);
+        if (!response.ok) {
+          throw new Error("Network 오류");
+        }
+        const result = await response.json();
+        setTitle(result.title);
+      } catch (error) {
+        setError(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  if (loading) return <h1>Loading...</h1>;
+  if (error) return <h1>Error: {error.message}</h1>;
 
   return (
     <div>
-      <h1>Item List</h1>
-      <input type="text" value={input} onChange={handleInputChange} />
-      <button onClick={addItem}>Add Item</button>
-      <List items={items} />
+      <h1>Data Fetching Example</h1>
+      <p>{title}</p>
     </div>
   );
 };
