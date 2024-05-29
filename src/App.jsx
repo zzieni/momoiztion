@@ -1,8 +1,9 @@
 import React, { useState } from "react";
+import { useEffect } from "react";
 import List from "./components/List";
 
-// TODO: 콘솔창을 확인해보고 input 타이핑할 때 마다
-//       List 컴포넌트가 불필요하게 리렌더링되지 않게 useMemo 사용해서 해결해 보세요.
+// TODO: 콘솔창을 확인해보고 Add Item 버튼 클릭 시
+//       useCallback 사용해서 useEffect 안의 콘솔로그가 찍히지 않도록 해보세요.
 
 const App = () => {
   const [input, setInput] = useState("");
@@ -14,19 +15,18 @@ const App = () => {
 
   const addItem = () => {
     setItems((prevItems) => [...prevItems, input]);
-    setInput("");
   };
 
-  const filteredItems = items.filter((item) =>
-    item.toLocaleLowerCase().includes("item"),
-  );
+  useEffect(() => {
+    console.log("Add Item 버튼 클릭 시에는 로그가 찍히지 않아야 합니다!");
+  }, [addItem]);
 
   return (
     <div>
       <h1>Item List</h1>
       <input type="text" value={input} onChange={handleInputChange} />
       <button onClick={addItem}>Add Item</button>
-      <List items={filteredItems} />
+      <List items={items} />
     </div>
   );
 };
